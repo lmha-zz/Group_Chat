@@ -15,13 +15,18 @@
 
 	io.on('new_name', function() {
 		var name = prompt('Please type your name:');
-		io.emit('typed_name', name);
-		$("#userName").html(name);
+		var escName = escapeHtml(name);
+		io.emit('typed_name', escName);
+		$("#userName").html(escName);
 	});
 
 	io.on('welcome_back', function(revisit) {
 		$("#userName").html(revisit.name);
 		$('#welcome_msg').append("<p>"+revisit.message+"</p>");
+	})
+
+	io.on('new_user', function(user) {
+		$('#chat_board').append("<p><i><b>"+user+" has joined the Conversation Board.</b></i></p>");
 	})
 
 	io.on('existing_messages', function(data) {

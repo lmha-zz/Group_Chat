@@ -11,6 +11,7 @@ module.exports = function Route(app) {
 			req.io.emit('new_name');
 		} else {
 			req.io.emit('welcome_back', { name: req.session.name, message: "You've visited before! Your name was, "+req.session.name+", last time! We'll keep using that name!" } );
+			app.io.broadcast('new_user', req.session.name );
 		}
 		req.io.emit('existing_messages', existing_messages);
 	})
@@ -18,6 +19,7 @@ module.exports = function Route(app) {
 	app.io.route('typed_name', function(req, res) {
 		req.session.name = req.data;
 		req.session.save();
+		app.io.broadcast('new_user', req.session.name );
 	})
 	
 	app.io.route('new_message', function(req, res) {
