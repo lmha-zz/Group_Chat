@@ -41,13 +41,15 @@
 	$(document).ready(function() {
 		$('button').click(function() {
 			var message = $('input').val();
-			io.emit('new_message', message);
+			var escMsg = escapeHtml(message);
+			io.emit('new_message', escMsg);
 			$('input').val('');
 		})
 		$(document).keypress(function(e) {
 			if(e.which == 13) {
 				var message = $('input').val();
-				io.emit('new_message', message);
+				var escMsg = escapeHtml(message);
+				io.emit('new_message', escMsg);
 				$('input').val('');
 			}
 		})
@@ -73,6 +75,19 @@
 				elm.removeChild(f);
 		}
 	}
+
+	function escapeHtml(str) {
+	    var div = document.createElement('div');
+	    div.appendChild(document.createTextNode(str));
+	    return div.innerHTML;
+	};
+
+	function unescapeHtml(escapedStr) {
+	    var div = document.createElement('div');
+	    div.innerHTML = escapedStr;
+	    var child = div.childNodes[0];
+	    return child ? child.nodeValue : '';
+	};
 
 	</script>
 </head>
