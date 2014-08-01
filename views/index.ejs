@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Group Chat</title>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/public/stylesheets/client_style.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	io = io.connect();
+	
+	io.emit('connect');
+
+	io.on('new_name', function() {
+		var name = prompt('Please type your name:');
+		io.emit('typed_name', name);
+		$("#userName").html(name);
+	});
+
+	io.on('welcome_back', function(revisit) {
+		$("#userName").html(revisit.name);
+		$('#welcome_msg').append("<p>"+revisit.message+"</p>");
+	})
+
+	io.on('existing_messages', function(data) {
+		if(data) {
+			for(message in data) {
+				$('#chat_board').append("<p>"+data[message]+"</p>");
+			}
+		}
+		scrollToBottom('chat_board');
+	})
+
+	io.on('new_messages', function(message) {
+		$('#chat_board').append("<p>"+message.new_message+"</p>");
+		scrollToBottom('chat_board');
+	})
+
+	$(document).ready(function() {
+		$('button').click(function() {
+			var message = $('input').val();
+			io.emit('new_message', message);
+			$('input').val('');
+		})
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+				var message = $('input').val();
+				io.emit('new_message', message);
+				$('input').val('');
+			}
+		})
+	})
+
+	function scrollToBottom(elm_id) {
+		var elm = document.getElementById(elm_id);
+		try {
+			elm.scrollTop = elm.scrollHeight;
+		}
+		catch(e) {
+			var f = document.createElement("input");
+			if (f.setAttribute)
+				f.setAttribute("type","text")
+			if (elm.appendChild) {
+				elm.appendChild(f);
+				f.style.width = "0px";
+				f.style.height = "0px";
+			}
+			if (f.focus)
+				f.focus();
+			if (elm.removeChild)
+				elm.removeChild(f);
+		}
+	}
+
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div id='welcome_msg' class="col-sm-10 col-sm-offset-1">
+				<h1><u>Conversation Board</u> <small>Welcome, <span id='userName'></span></small></h1>
+			</div>
+		</div>
+		<div class="row">
+			<div id='chat_board' class="col-sm-10 col-sm-offset-1">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-10 col-sm-offset-1">
+				<input type="text" name="message" placeholder='Enter your message here...'>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-10 col-sm-offset-1">
+				<button class='btn btn-primary pull-right'>Send</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
