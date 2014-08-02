@@ -27,6 +27,7 @@
 
 	io.on('new_user', function(user) {
 		$('#chat_board').append("<p><i><b>"+user+" has joined the Conversation Board.</b></i></p>");
+		scrollToBottom('chat_board');
 	})
 
 	io.on('existing_messages', function(data) {
@@ -104,8 +105,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div id='chat_board' class="col-sm-10 col-sm-offset-1">
-			</div>
+			<div id='chat_board' class="col-sm-10 col-sm-offset-1"></div>
 		</div>
 		<div class="row">
 			<div class="col-sm-10 col-sm-offset-1">
