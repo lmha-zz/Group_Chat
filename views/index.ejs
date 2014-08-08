@@ -27,7 +27,8 @@
 
 	io.on('new_user', function(user) {
 		$('#chat_board').append("<p><i><b>"+user+" has joined the Conversation Board.</b></i></p>");
-		scrollToBottom('chat_board');
+		var height = $('#chat_board')[0].scrollHeight;
+		$('#chat_board').scrollTop(height);
 	})
 
 	io.on('existing_messages', function(data) {
@@ -36,15 +37,18 @@
 				$('#chat_board').append("<p>"+data[message]+"</p>");
 			}
 		}
-		scrollToBottom('chat_board');
+		var height = $('#chat_board')[0].scrollHeight;
+		$('#chat_board').scrollTop(height);
 	})
 
 	io.on('new_messages', function(message) {
 		$('#chat_board').append("<p>"+message.new_message+"</p>");
-		scrollToBottom('chat_board');
+		var height = $('#chat_board')[0].scrollHeight;
+		$('#chat_board').scrollTop(height);
 	})
 
 	$(document).ready(function() {
+		$('input').focus();
 		$('button').click(function() {
 			var message = $('input').val();
 			var escMsg = escapeHtml(message);
@@ -60,27 +64,6 @@
 			}
 		})
 	})
-
-	function scrollToBottom(elm_id) {
-		var elm = document.getElementById(elm_id);
-		try {
-			elm.scrollTop = elm.scrollHeight;
-		}
-		catch(e) {
-			var f = document.createElement("input");
-			if (f.setAttribute)
-				f.setAttribute("type","text")
-			if (elm.appendChild) {
-				elm.appendChild(f);
-				f.style.width = "0px";
-				f.style.height = "0px";
-			}
-			if (f.focus)
-				f.focus();
-			if (elm.removeChild)
-				elm.removeChild(f);
-		}
-	}
 
 	function escapeHtml(str) {
 	    var div = document.createElement('div');
